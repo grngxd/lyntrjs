@@ -8,7 +8,7 @@ import { User } from './user/user';
 const api = "https://lyntr.com/api/";
 
 export class Lyntr {
-    cookie: string;
+    private cookie: string;
     private emitter;
     constructor(config: LyntrOptions) {
         this.cookie = config.cookie;
@@ -35,8 +35,8 @@ export class Lyntr {
                 this.emitter.emit('auth', response.error || 'Invalid user data');
             }
         } catch (error: any) {
-            this.emitter.emit('error', error.response.data.error || error.message);
-            this.emitter.emit('auth', error.response.data.error || error.message);
+            this.emitter.emit('error', error.response || error.message);
+            this.emitter.emit('auth', error.response || error.message);
         }
     }
 
@@ -44,7 +44,7 @@ export class Lyntr {
         try {
             const response = await axios.get(api + 'me', {
                 headers: {
-                    'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
+                    'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`,
                 },
                 httpsAgent: new https.Agent({
                     rejectUnauthorized: false
@@ -58,7 +58,7 @@ export class Lyntr {
 
             return response;
         } catch (error: any) {
-            this.emitter.emit('error', error.response.data.error || error.message);
+            this.emitter.emit('error', error.response || error.message);
         }
     }
 
@@ -111,7 +111,7 @@ export class Lyntr {
             .then((res) => res.data);
             return response;
         } catch (error: any) {
-            this.emitter.emit('error', error.response?.data?.message || error.message);
+            this.emitter.emit('error', error.response || error.message);
         }
     }
 

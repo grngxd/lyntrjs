@@ -1,6 +1,6 @@
 {
   "name": "lyntr",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Lyntr.js is a Javascript package that provides bindings to the Lyntr user API.",
   "main": "out/index.js",
   "scripts": {
