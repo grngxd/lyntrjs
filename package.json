@@ -1,12 +1,12 @@
 {
   "name": "lyntr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lyntr.js is a Javascript package that provides bindings to the Lyntr user API.",
-  "main": "index.js",
+  "main": "out/index.js",
   "scripts": {
     "test": "tsx -r tsconfig-paths/register ./node_modules/mocha/bin/_mocha './test/**/*.ts'",
     "dev": "tsx ./src/index.ts",
-    "build": "tsc",
+    "build": "tsc --declaration",
     "lint": "eslint \"./src/**/*.ts\""
   },
   "keywords": [],
