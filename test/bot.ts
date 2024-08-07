@@ -38,4 +38,20 @@ describe('Bot', function () {
     sinon.assert.calledOnce(axiosPostStub);
     expect(post.content).to.equal('Hello, world!');
   });
+
+  it('should get the feed', async function () {
+    axiosGetStub.resolves({ data: { lynts: [{ id: 1, content: 'Hello, world!' }] } });
+    const feed = await bot.feed();
+    sinon.assert.calledOnce(axiosGetStub);
+    expect(feed).to.be.an('array');
+    expect(feed[0].content).to.equal('Hello, world!');
+  });
+
+  it('should search with query "lyntr"', async function () {
+    axiosGetStub.resolves({ data: [{ id: 1, content: 'Hello, world!' }] });
+    const search = await bot.search('lyntr');
+    sinon.assert.calledOnce(axiosGetStub);
+    expect(search).to.be.an('array');
+    expect(search[0].content).to.equal('Hello, world!');
+  });
 });
