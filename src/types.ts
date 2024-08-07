@@ -8,9 +8,11 @@ export type LyntPostOptions = {
 }
 
 export enum FeedType {
-    FOLLOWING = 'following',
-    MAIN = 'main',
-    NEW = 'new',
+    FOR_YOU = 'For you',
+    FOLLOWING = 'Following',
+    LIVE = 'Live',
+    NEW = 'New',
+    LIKED = 'Liked'
 }
 
 export type LyntOptions = {

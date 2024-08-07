@@ -62,11 +62,19 @@ export class Lyntr {
         }
     }
 
-    public async feed(type: FeedType = FeedType.MAIN): Promise<Lynt[] | void> {
+    public async feed(type: FeedType = FeedType.FOR_YOU, handle: string | undefined = undefined): Promise<Lynt[] | void> {
+        // from lyntr source code:
+        // const handle = url.searchParams.get('handle');
+	    // const type = url.searchParams.get('type') || 'For you';
+
         try {
             const response = await axios.get(api + 'feed', {
                 headers: {
                     'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
+                },
+                params: {
+                    type,
+                    handle
                 },
                 httpsAgent: new https.Agent({
                     rejectUnauthorized: false
@@ -104,6 +112,33 @@ export class Lyntr {
             return response;
         } catch (error: any) {
             this.emitter.emit('error', error.response?.data?.message || error.message);
+        }
+    }
+
+    public async search(q: string) {
+        try {
+            const response = await axios.get(api + 'search', {
+                headers: {
+                    'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
+                },
+                params: {
+                    q
+                },
+                httpsAgent: new https.Agent({
+                    rejectUnauthorized: false
+                })
+            })
+            .then((res) => res.data);
+            const array = response.map((lynt: any) => {
+                if (!Lynt.isLynt(lynt)) {
+                    this.emitter.emit('error', lynt.error || 'Invalid lynt data');
+                }
+
+                return lynt;
+            });
+            return array;
+        } catch (error: any) {
+            this.emitter.emit('error', error.response || error.message);
         }
     }
 }
