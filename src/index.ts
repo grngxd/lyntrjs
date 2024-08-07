@@ -1,5 +1,4 @@
 import axios from 'axios';
-import dotenv from 'dotenv';
 import Emittery from 'emittery';
 import https from 'https';
 import { Lynt } from './lynt/lynt';
@@ -108,17 +107,3 @@ export class Lyntr {
         }
     }
 }
-(async () => {
-    dotenv.config();
-    const cookie = process.env.COOKIE || '';
-
-    const bot = new Lyntr({ cookie });
-    bot.on('error', console.error);
-    
-    console.log('Bot is ready');
-    const f = await bot.post({
-        content: 'dont mind this chat im just testing stuff'
-    });
-    console.log(f);
-    console.log('Posted');
-})();
