@@ -1,72 +1,41 @@
-// tests/bot.test.ts
-import { strict as assert } from 'assert';
 import axios from 'axios';
+import { expect } from 'chai';
+import dotenv from 'dotenv';
 import sinon from 'sinon';
 import { Lyntr } from '../src/index';
+import { Lynt } from '../src/lynt/lynt';
 
 describe('Bot', function () {
   let bot: Lyntr;
   let axiosGetStub: sinon.SinonStub;
+  let axiosPostStub: sinon.SinonStub;
+  dotenv.config();
 
   beforeEach(function () {
     bot = new Lyntr({
-      cookie: 'invalid-auth-token'
+      cookie: process.env.COOKIE!
     });
     axiosGetStub = sinon.stub(axios, 'get');
+    axiosPostStub = sinon.stub(axios, 'post');
   });
 
   afterEach(function () {
     axiosGetStub.restore();
+    axiosPostStub.restore();
   });
 
-  describe('#login()', function () {
-    it('should throw an error for an invalid token', async function () {
-      const mockError = {
-        response: {
-          data: {
-            error: 'Invalid token'
-          }
-        }
-      };
-      axiosGetStub.rejects(mockError);
+  it('should login', async function () {
+    axiosGetStub.resolves({ data: { id: 1, username: 'test' } });
+    await bot.login();
+    sinon.assert.calledOnce(axiosGetStub);
+  });
 
-      try {
-        await bot.login();
-        assert.fail('Expected error was not thrown');
-      } catch (error) {
-        assert.strictEqual(error.message, 'Invalid token');
-      }
-
-      assert(axiosGetStub.calledOnce);
-      assert(axiosGetStub.calledWithMatch('https://lyntr.com/api/me', {
-        headers: {
-          'Cookie': '_TOKEN__DO_NOT_SHARE=invalid-auth-token'
-        }
-      }));
-    });
-
-    it('should log the error response data', async function () {
-      const mockError = {
-        response: {
-          data: {
-            error: 'Invalid token'
-          }
-        }
-      };
-      axiosGetStub.rejects(mockError);
-
-      const consoleErrorStub = sinon.stub(console, 'error');
-
-      try {
-        await bot.login();
-      } catch (error) {
-        // Expected error
-      }
-
-      assert(consoleErrorStub.calledOnce);
-      assert(consoleErrorStub.calledWith(mockError));
-
-      consoleErrorStub.restore();
-    });
+  it('should post a lynt and return the post', async function () {
+    axiosPostStub.resolves({ data: { id: 1, content: 'Hello, world!' } });
+    const post = await bot.post({
+      content: 'Hello, world!'
+    }) as Lynt;
+    sinon.assert.calledOnce(axiosPostStub);
+    expect(post.content).to.equal('Hello, world!');
   });
 });

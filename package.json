@@ -4,7 +4,7 @@
   "description": "Lyntr.js is a Javascript package that provides bindings to the Lyntr user API.",
   "main": "index.js",
   "scripts": {
-    "test": "ts-mocha './test/**/*.ts'",
+    "test": "tsx -r tsconfig-paths/register ./node_modules/mocha/bin/_mocha './test/**/*.ts'",
     "dev": "tsx ./src/index.ts",
     "build": "tsc",
     "lint": "eslint \"./src/**/*.ts\""
@@ -17,6 +17,7 @@
     "@types/dotenv": "^8.2.0",
     "@types/mocha": "^10.0.7",
     "@types/node": "^22.1.0",
+    "chai": "^5.1.1",
     "dotenv": "^16.4.5",
     "globals": "^15.9.0",
     "mocha": "^10.7.0",
