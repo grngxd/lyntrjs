@@ -5,14 +5,14 @@ import { Lynt } from './lynt/lynt';
 import { FeedType, LyntPostOptions, LyntrOptions } from './types';
 import { User } from './user/user';
 
-const api = "https://lyntr.com/api/";
-
 export class Lyntr {
     private cookie: string;
     private emitter;
+    private api = "https://lyntr.com/api/";
     constructor(config: LyntrOptions) {
         this.cookie = config.cookie;
         this.emitter = new Emittery();
+        this.api = config.api || this.api;
         axios.defaults.withCredentials = true;
     }
 
@@ -20,7 +20,7 @@ export class Lyntr {
 
     public async login() {
         try {
-            const response = await axios.get(api + 'me', {
+            const response = await axios.get(this.api + 'me', {
                 headers: {
                     'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
                 },
@@ -42,7 +42,7 @@ export class Lyntr {
 
     public async me(): Promise<User | void> {
         try {
-            const response = await axios.get(api + 'me', {
+            const response = await axios.get(this.api + 'me', {
                 headers: {
                     'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`,
                 },
@@ -68,7 +68,7 @@ export class Lyntr {
 	    // const type = url.searchParams.get('type') || 'For you';
 
         try {
-            const response = await axios.get(api + 'feed', {
+            const response = await axios.get(this.api + 'feed', {
                 headers: {
                     'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
                 },
@@ -98,7 +98,7 @@ export class Lyntr {
     
     public async post(options: LyntPostOptions): Promise<Lynt | void> {
         try {
-            const response = await axios.post(api + 'lynt', options, {
+            const response = await axios.post(this.api + 'lynt', options, {
                 headers: {
                     'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`,
                     'Origin': 'https://lyntr.com',
@@ -117,7 +117,7 @@ export class Lyntr {
 
     public async search(q: string) {
         try {
-            const response = await axios.get(api + 'search', {
+            const response = await axios.get(this.api + 'search', {
                 headers: {
                     'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
                 },

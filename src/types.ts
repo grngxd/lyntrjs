@@ -1,5 +1,6 @@
 export type LyntrOptions = {
     cookie: string;
+    api?: string;
 }
 
 export type LyntPostOptions = {

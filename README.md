@@ -22,9 +22,14 @@ import { Lyntr } from 'lyntr';
 
 // Your Lyntr access token, labled as "_TOKEN__DO_NOT_SHARE" in your browser's cookies
 const cookie = 'your_cookie_here';
+
+// The base URL of the Lyntr API
+const api = 'https://lyntr.com/api/'
+
 // The Lyntr bot instance, with the cookie provided as authentication
 const bot = new Lyntr({
-    cookie
+    cookie,
+    api
 });
 
 
@@ -45,3 +50,7 @@ bot.on('ready', () => {
     });                           //  }
 })();
 ```
+
+## ✍ Contributing
+
+Contributions are always welcome! Please fork the repository and create a pull request with your changes.
