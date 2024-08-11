@@ -8,27 +8,35 @@ import { User } from './user/user';
 export class Lyntr {
     private cookie: string;
     private emitter;
-    private api = "https://lyntr.com/api/";
+    private base = "https://lyntr.com/";
+    private api;
+    private client;
     constructor(config: LyntrOptions) {
         this.cookie = config.cookie;
         this.emitter = new Emittery();
-        this.api = config.api || this.api;
+        this.base = config.base || this.base;
+        if (!this.base.endsWith('/')) this.base += '/';
+
+        this.api = this.base + 'api/';
         axios.defaults.withCredentials = true;
+
+        this.client = axios.create({
+            headers: {
+                'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`,
+                'Origin': this.base,
+            },
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false
+            })
+        });
     }
 
     public on(event: string, listener: (...args: any[]) => void) { this.emitter.on(event, listener) }
 
     public async login() {
         try {
-            const response = await axios.get(this.api + 'me', {
-                headers: {
-                    'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
-                },
-                httpsAgent: new https.Agent({
-                    rejectUnauthorized: false
-                })
-            })
-            .then((res) => res.data);
+            const response = await this.client.get('me')
+                .then((res) => res.data);
 
             if (!User.isUser(response)) {
                 this.emitter.emit('error', response.error || 'Invalid user data');
@@ -42,15 +50,8 @@ export class Lyntr {
 
     public async me(): Promise<User | void> {
         try {
-            const response = await axios.get(this.api + 'me', {
-                headers: {
-                    'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`,
-                },
-                httpsAgent: new https.Agent({
-                    rejectUnauthorized: false
-                })
-            })
-            .then((res) => res.data);
+            const response = await this.client.get('me')
+                .then((res) => res.data);
 
             if (!User.isUser(response)) {
                 this.emitter.emit('error', response.error || 'Invalid user data');
@@ -63,22 +64,12 @@ export class Lyntr {
     }
 
     public async feed(type: FeedType = FeedType.FOR_YOU, handle: string | undefined = undefined): Promise<Lynt[] | void> {
-        // from lyntr source code:
-        // const handle = url.searchParams.get('handle');
-	    // const type = url.searchParams.get('type') || 'For you';
-
         try {
-            const response = await axios.get(this.api + 'feed', {
-                headers: {
-                    'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
-                },
+            const response = await this.client.get('feed', {
                 params: {
                     type,
                     handle
-                },
-                httpsAgent: new https.Agent({
-                    rejectUnauthorized: false
-                })
+                }
             })
             .then((res) => res.data.lynts);
 
@@ -98,15 +89,10 @@ export class Lyntr {
     
     public async post(options: LyntPostOptions): Promise<Lynt | void> {
         try {
-            const response = await axios.post(this.api + 'lynt', options, {
+            const response = await this.client.post('lynt', options, {
                 headers: {
-                    'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`,
-                    'Origin': 'https://lyntr.com',
                     'Content-Type': 'multipart/form-data',
-                },
-                httpsAgent: new https.Agent({
-                    rejectUnauthorized: false
-                })
+                }
             })
             .then((res) => res.data);
             return response;
@@ -117,16 +103,10 @@ export class Lyntr {
 
     public async search(q: string) {
         try {
-            const response = await axios.get(this.api + 'search', {
-                headers: {
-                    'Cookie': `_TOKEN__DO_NOT_SHARE=${this.cookie}`
-                },
+            const response = await this.client.get('search', {
                 params: {
                     q
-                },
-                httpsAgent: new https.Agent({
-                    rejectUnauthorized: false
-                })
+                }
             })
             .then((res) => res.data);
             const array = response.map((lynt: any) => {

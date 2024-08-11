@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { expect } from 'chai';
 import dotenv from 'dotenv';
 import sinon from 'sinon';
@@ -13,10 +12,11 @@ describe('Bot', function () {
 
   beforeEach(function () {
     bot = new Lyntr({
-      cookie: process.env.COOKIE!
+      cookie: process.env.COOKIE!,
+      base: "https://lyntr.jnnj.xyz"
     });
-    axiosGetStub = sinon.stub(axios, 'get');
-    axiosPostStub = sinon.stub(axios, 'post');
+    axiosGetStub = sinon.stub(bot['client'], 'get');
+    axiosPostStub = sinon.stub(bot['client'], 'post');
   });
 
   afterEach(function () {
